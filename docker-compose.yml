@@ -1,0 +1,40 @@
+services:
+
+  nginx:
+    build: .
+    ports:
+      - 8080:80
+    networks:
+      - internal
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    
+    restart: always
+
+  django_app_1:
+    build: .
+    image: django_app
+    # command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    container_name: django-app-1
+    ports:
+      - 8001:8000
+    networks:
+      - internal
+    depends_on:
+    - nginx
+
+  django_app_2:
+    build: .
+    image: django_app
+    # command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    container_name: django-app-2
+    ports:
+      - 8002:8000
+    networks:
+      - internal
+    depends_on:
+    - django_app_1
+
+networks:
+  internal:
+    driver: bridge
